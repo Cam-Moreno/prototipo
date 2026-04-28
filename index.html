@@ -95,17 +95,14 @@
       font-size: 13px; color: var(--muted); min-height: 20px;
       opacity: 0; animation: fadeUp 0.6s ease 0.8s forwards;
     }
-    .lang-switcher {
       margin-top: 2.5rem; display: flex; flex-wrap: wrap; gap: 8px;
       justify-content: center; opacity: 0; animation: fadeUp 0.6s ease 0.95s forwards;
     }
-    .lang-switcher button {
       font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 6px 14px;
       border-radius: 999px; border: 1px solid var(--border);
       background: var(--surface); color: var(--muted); cursor: pointer;
       transition: all 0.2s; -webkit-tap-highlight-color: transparent;
     }
-    .lang-switcher button.active, .lang-switcher button:hover {
       border-color: var(--accent); color: var(--accent);
       background: rgba(200,240,96,0.08);
     }
@@ -133,7 +130,7 @@
       <span class="label" id="btn-label">Toca aquí</span>
     </button>
     <p class="status" id="status"></p>
-    <div class="lang-switcher" id="lang-switcher"></div>
+
   </div>
 </div>
 
@@ -180,13 +177,10 @@
     document.getElementById("headline").innerHTML = m.headline.replace("\n", "<br>");
     document.getElementById("sub").innerHTML = m.sub.replace("\n", "<br>");
     document.getElementById("btn-label").textContent = m.tap;
-    document.querySelectorAll(".lang-switcher button").forEach(b => {
       b.classList.toggle("active", b.dataset.lang === lang);
     });
   }
 
-  function buildSwitcher() {
-    const sw = document.getElementById("lang-switcher");
     Object.keys(messages).forEach(lang => {
       const btn = document.createElement("button");
       btn.textContent = messages[lang].name;
@@ -223,7 +217,6 @@
     });
   }
 
-  buildSwitcher();
   setLang(detectLang());
 </script>
 </body>
