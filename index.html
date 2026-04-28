@@ -7,174 +7,79 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg: #0d0d0d;
-      --surface: #161616;
-      --border: rgba(255,255,255,0.08);
-      --text: #f0ede6;
-      --muted: rgba(240,237,230,0.45);
-      --accent: #c8f060;
-      --accent-dark: #a8d040;
-      --radius: 20px;
+      --bg: #0d0d0d; --surface: #161616; --border: rgba(255,255,255,0.08);
+      --text: #f0ede6; --muted: rgba(240,237,230,0.45);
+      --accent: #c8f060; --accent-dark: #a8d040;
     }
-
     html, body {
-      height: 100%;
-      width: 100%;
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
+      height: 100%; width: 100%; background: var(--bg); color: var(--text);
+      font-family: 'DM Sans', sans-serif; display: flex;
+      align-items: center; justify-content: center; overflow: hidden;
     }
-
     .page {
-      width: 100%;
-      max-width: 420px;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 2.5rem 2rem;
-      position: relative;
+      width: 100%; max-width: 420px; min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 2.5rem 2rem; position: relative;
     }
-
-    /* Decorative blobs */
     .blob {
-      position: fixed;
-      border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.18;
-      pointer-events: none;
-      z-index: 0;
+      position: fixed; border-radius: 50%; filter: blur(80px);
+      opacity: 0.18; pointer-events: none; z-index: 0;
     }
     .blob-1 { width: 320px; height: 320px; background: var(--accent); top: -80px; right: -80px; }
     .blob-2 { width: 240px; height: 240px; background: #60a0f0; bottom: -60px; left: -60px; }
-
-    .content {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      text-align: center;
-    }
-
+    .content { position: relative; z-index: 1; width: 100%; text-align: center; }
     .lang-badge {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--accent);
-      border: 1px solid rgba(200,240,96,0.3);
-      border-radius: 999px;
-      padding: 5px 14px;
-      margin-bottom: 2rem;
-      opacity: 0;
-      animation: fadeUp 0.6s ease 0.2s forwards;
+      display: inline-block; font-size: 11px; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent);
+      border: 1px solid rgba(200,240,96,0.3); border-radius: 999px;
+      padding: 5px 14px; margin-bottom: 2rem;
+      opacity: 0; animation: fadeUp 0.6s ease 0.2s forwards;
     }
-
     .headline {
-      font-family: 'DM Serif Display', serif;
-      font-size: clamp(2rem, 8vw, 2.6rem);
-      line-height: 1.15;
-      color: var(--text);
-      margin-bottom: 1rem;
-      opacity: 0;
-      animation: fadeUp 0.6s ease 0.35s forwards;
+      font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 8vw, 2.6rem);
+      line-height: 1.15; color: var(--text); margin-bottom: 1rem;
+      opacity: 0; animation: fadeUp 0.6s ease 0.35s forwards;
     }
-
     .sub {
-      font-size: 15px;
-      font-weight: 300;
-      color: var(--muted);
-      line-height: 1.6;
-      margin-bottom: 3rem;
-      opacity: 0;
-      animation: fadeUp 0.6s ease 0.5s forwards;
+      font-size: 15px; font-weight: 300; color: var(--muted);
+      line-height: 1.6; margin-bottom: 3rem;
+      opacity: 0; animation: fadeUp 0.6s ease 0.5s forwards;
     }
-
-    /* Tap button */
     .tap-btn {
-      position: relative;
-      width: 160px;
-      height: 160px;
-      border-radius: 50%;
-      border: none;
-      background: var(--accent);
-      color: #0d0d0d;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin: 0 auto 3rem;
+      position: relative; width: 160px; height: 160px; border-radius: 50%;
+      border: none; background: var(--accent); color: #0d0d0d; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 8px; margin: 0 auto 3rem;
       transition: transform 0.15s ease, background 0.2s;
-      opacity: 0;
-      animation: fadeUp 0.6s ease 0.65s forwards;
+      opacity: 0; animation: fadeUp 0.6s ease 0.65s forwards;
       -webkit-tap-highlight-color: transparent;
     }
-
     .tap-btn:active { transform: scale(0.94); background: var(--accent-dark); }
-
-    .tap-btn .icon {
-      font-size: 40px;
-      line-height: 1;
-      transition: opacity 0.2s;
-    }
-
+    .tap-btn .icon { font-size: 40px; line-height: 1; }
     .tap-btn .label {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
+      font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
     }
-
-    /* Pulse ring */
     .tap-btn::before, .tap-btn::after {
-      content: '';
-      position: absolute;
-      border-radius: 50%;
-      border: 2px solid var(--accent);
-      opacity: 0;
+      content: ''; position: absolute; border-radius: 50%;
+      border: 2px solid var(--accent); opacity: 0;
       animation: pulse 2.5s ease-out infinite;
     }
     .tap-btn::after { animation-delay: 1.2s; }
-
     @keyframes pulse {
       0%   { width: 160px; height: 160px; opacity: 0.6; }
       100% { width: 260px; height: 260px; opacity: 0; }
     }
-
-    /* Playing state */
     .tap-btn.playing {
-      background: var(--surface);
-      border: 2px solid var(--accent);
-      color: var(--accent);
+      background: var(--surface); border: 2px solid var(--accent); color: var(--accent);
     }
-    .tap-btn.playing::before,
-    .tap-btn.playing::after { display: none; }
-
-    /* Sound wave bars */
-    .wave {
-      display: none;
-      align-items: flex-end;
-      gap: 4px;
-      height: 28px;
-    }
+    .tap-btn.playing::before, .tap-btn.playing::after { display: none; }
+    .wave { display: none; align-items: flex-end; gap: 4px; height: 28px; }
     .tap-btn.playing .wave { display: flex; }
     .tap-btn.playing .icon { display: none; }
-
     .wave span {
-      display: block;
-      width: 4px;
-      background: var(--accent);
-      border-radius: 2px;
+      display: block; width: 4px; background: var(--accent); border-radius: 2px;
       animation: bar 0.8s ease-in-out infinite alternate;
     }
     .wave span:nth-child(1) { height: 8px;  animation-delay: 0s; }
@@ -182,52 +87,28 @@
     .wave span:nth-child(3) { height: 28px; animation-delay: 0.3s; }
     .wave span:nth-child(4) { height: 16px; animation-delay: 0.45s; }
     .wave span:nth-child(5) { height: 10px; animation-delay: 0.6s; }
-
     @keyframes bar {
       from { transform: scaleY(0.3); }
       to   { transform: scaleY(1); }
     }
-
-    /* Status text */
     .status {
-      font-size: 13px;
-      color: var(--muted);
-      min-height: 20px;
-      opacity: 0;
-      animation: fadeUp 0.6s ease 0.8s forwards;
+      font-size: 13px; color: var(--muted); min-height: 20px;
+      opacity: 0; animation: fadeUp 0.6s ease 0.8s forwards;
     }
-
-    /* Language switcher */
     .lang-switcher {
-      margin-top: 2.5rem;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: center;
-      opacity: 0;
-      animation: fadeUp 0.6s ease 0.95s forwards;
+      margin-top: 2.5rem; display: flex; flex-wrap: wrap; gap: 8px;
+      justify-content: center; opacity: 0; animation: fadeUp 0.6s ease 0.95s forwards;
     }
-
     .lang-switcher button {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 12px;
-      padding: 6px 14px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      color: var(--muted);
-      cursor: pointer;
-      transition: all 0.2s;
-      -webkit-tap-highlight-color: transparent;
+      font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 6px 14px;
+      border-radius: 999px; border: 1px solid var(--border);
+      background: var(--surface); color: var(--muted); cursor: pointer;
+      transition: all 0.2s; -webkit-tap-highlight-color: transparent;
     }
-
-    .lang-switcher button.active,
-    .lang-switcher button:hover {
-      border-color: var(--accent);
-      color: var(--accent);
+    .lang-switcher button.active, .lang-switcher button:hover {
+      border-color: var(--accent); color: var(--accent);
       background: rgba(200,240,96,0.08);
     }
-
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(16px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -241,49 +122,58 @@
 
 <div class="page">
   <div class="content">
-
     <div class="lang-badge" id="lang-badge">Detectando idioma…</div>
-
     <h1 class="headline" id="headline">Toca para<br>escuchar</h1>
-
     <p class="sub" id="sub">Se reproducirá un mensaje de audio<br>en tu idioma.</p>
-
     <button class="tap-btn" id="tap-btn" onclick="handleTap()">
-      <span class="icon">▶</span>
+      <span class="icon">&#9654;</span>
       <div class="wave">
         <span></span><span></span><span></span><span></span><span></span>
       </div>
       <span class="label" id="btn-label">Toca aquí</span>
     </button>
-
     <p class="status" id="status"></p>
-
     <div class="lang-switcher" id="lang-switcher"></div>
-
   </div>
 </div>
 
 <script>
   const messages = {
-    es: { text: "Este es el prototipo de la página web que se abre después de escanear el código QR.", lang: "es-ES", name: "Español", tap: "Toca aquí", headline: "Toca para escuchar", sub: "Se reproducirá un mensaje\nen tu idioma." },
-    en: { text: "This is the prototype of the web page that opens after scanning the QR code.", lang: "en-US", name: "English", tap: "Tap here", headline: "Tap to listen", sub: "An audio message will play\nin your language." },
-    fr: { text: "Ceci est le prototype de la page web qui s'ouvre après avoir scanné le code QR.", lang: "fr-FR", name: "Français", tap: "Appuyez ici", headline: "Appuyez pour écouter", sub: "Un message audio sera lu\ndans votre langue." },
-    pt: { text: "Este é o protótipo da página web que abre após escanear o código QR.", lang: "pt-BR", name: "Português", tap: "Toque aqui", headline: "Toque para ouvir", sub: "Uma mensagem de áudio será\nreproduzida no seu idioma." },
-    de: { text: "Dies ist der Prototyp der Webseite, die nach dem Scannen des QR-Codes geöffnet wird.", lang: "de-DE", name: "Deutsch", tap: "Hier tippen", headline: "Tippen zum Hören", sub: "Eine Audionachricht wird\nin Ihrer Sprache abgespielt." },
-    it: { text: "Questo è il prototipo della pagina web che si apre dopo aver scansionato il codice QR.", lang: "it-IT", name: "Italiano", tap: "Tocca qui", headline: "Tocca per ascoltare", sub: "Verrà riprodotto un messaggio\naudio nella tua lingua." },
-    zh: { text: "这是扫描二维码后打开的网页原型。", lang: "zh-CN", name: "中文", tap: "点击此处", headline: "点击收听", sub: "将以您的语言播放音频消息。" },
-    ja: { text: "これはQRコードをスキャンした後に開くウェブページのプロトタイプです。", lang: "ja-JP", name: "日本語", tap: "ここをタップ", headline: "タップして聴く", sub: "あなたの言語で音声メッセージが\n再生されます。" }
+    es: { file: "spanish.mp3",  name: "Español",    tap: "Toca aquí",    headline: "Toca para escuchar",   sub: "Se reproducirá un mensaje\nen tu idioma." },
+    en: { file: "english.mp3",  name: "English",    tap: "Tap here",     headline: "Tap to listen",        sub: "An audio message will play\nin your language." },
+    fr: { file: "french.mp3",   name: "Français",   tap: "Appuyez ici",  headline: "Appuyez pour écouter", sub: "Un message audio sera lu\ndans votre langue." },
+    it: { file: "italian.mp3",  name: "Italiano",   tap: "Tocca qui",    headline: "Tocca per ascoltare",  sub: "Verrà riprodotto un messaggio\naudio nella tua lingua." },
+    nl: { file: "dutch.mp3",    name: "Nederlands", tap: "Tik hier",     headline: "Tik om te luisteren",  sub: "Er wordt een audiobericht\nin uw taal afgespeeld." }
   };
 
+  // Si el dispositivo tiene un idioma sin mp3, usamos el fallback
+  const langFallback = { de: "nl", pt: "es", zh: "es", ja: "es", ko: "en", ru: "en" };
+
   let currentLang = "es";
+  let currentAudio = null;
   let isPlaying = false;
 
   function detectLang() {
     const nav = (navigator.language || "es").toLowerCase().split("-")[0];
-    return messages[nav] ? nav : "es";
+    if (messages[nav]) return nav;
+    if (langFallback[nav]) return langFallback[nav];
+    return "es";
+  }
+
+  function stopAudio() {
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+      currentAudio = null;
+    }
+    isPlaying = false;
+    document.getElementById("tap-btn").classList.remove("playing");
+    document.getElementById("status").textContent = "";
+    document.getElementById("btn-label").textContent = messages[currentLang].tap;
   }
 
   function setLang(lang) {
+    if (isPlaying) stopAudio();
     currentLang = lang;
     const m = messages[lang];
     document.getElementById("lang-badge").textContent = m.name;
@@ -293,11 +183,6 @@
     document.querySelectorAll(".lang-switcher button").forEach(b => {
       b.classList.toggle("active", b.dataset.lang === lang);
     });
-    if (isPlaying) {
-      window.speechSynthesis.cancel();
-      isPlaying = false;
-      resetBtn();
-    }
   }
 
   function buildSwitcher() {
@@ -311,50 +196,35 @@
     });
   }
 
-  function resetBtn() {
-    const btn = document.getElementById("tap-btn");
-    btn.classList.remove("playing");
-    document.getElementById("status").textContent = "";
-    isPlaying = false;
-  }
-
   function handleTap() {
-    if (!('speechSynthesis' in window)) {
-      document.getElementById("status").textContent = "Tu navegador no soporta audio.";
-      return;
-    }
-
-    if (isPlaying) {
-      window.speechSynthesis.cancel();
-      resetBtn();
-      return;
-    }
+    if (isPlaying) { stopAudio(); return; }
 
     const m = messages[currentLang];
-    const utter = new SpeechSynthesisUtterance(m.text);
-    utter.lang = m.lang;
-    utter.rate = 0.95;
+    const audio = new Audio(m.file);
+    currentAudio = audio;
 
-    utter.onstart = () => {
+    audio.onplay = () => {
       isPlaying = true;
       document.getElementById("tap-btn").classList.add("playing");
       document.getElementById("btn-label").textContent = "Detener";
       document.getElementById("status").textContent = "Reproduciendo…";
     };
 
-    utter.onend = utter.onerror = () => {
-      resetBtn();
-      document.getElementById("btn-label").textContent = messages[currentLang].tap;
+    audio.onended = () => stopAudio();
+
+    audio.onerror = () => {
+      stopAudio();
+      document.getElementById("status").textContent = "⚠ No se encontró el archivo de audio.";
     };
 
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utter);
+    audio.play().catch(() => {
+      stopAudio();
+      document.getElementById("status").textContent = "⚠ Error al reproducir el audio.";
+    });
   }
 
-  // Init
   buildSwitcher();
-  const detected = detectLang();
-  setLang(detected);
+  setLang(detectLang());
 </script>
 </body>
 </html>
