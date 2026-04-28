@@ -95,17 +95,6 @@
       font-size: 13px; color: var(--muted); min-height: 20px;
       opacity: 0; animation: fadeUp 0.6s ease 0.8s forwards;
     }
-      margin-top: 2.5rem; display: flex; flex-wrap: wrap; gap: 8px;
-      justify-content: center; opacity: 0; animation: fadeUp 0.6s ease 0.95s forwards;
-    }
-      font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 6px 14px;
-      border-radius: 999px; border: 1px solid var(--border);
-      background: var(--surface); color: var(--muted); cursor: pointer;
-      transition: all 0.2s; -webkit-tap-highlight-color: transparent;
-    }
-      border-color: var(--accent); color: var(--accent);
-      background: rgba(200,240,96,0.08);
-    }
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(16px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -130,20 +119,18 @@
       <span class="label" id="btn-label">Toca aquí</span>
     </button>
     <p class="status" id="status"></p>
-
   </div>
 </div>
 
 <script>
   const messages = {
-    es: { file: "spanish.mp3",  name: "Español",    tap: "Toca aquí",    headline: "Toca para escuchar",   sub: "Se reproducirá un mensaje\nen tu idioma." },
-    en: { file: "english.mp3",  name: "English",    tap: "Tap here",     headline: "Tap to listen",        sub: "An audio message will play\nin your language." },
-    fr: { file: "french.mp3",   name: "Français",   tap: "Appuyez ici",  headline: "Appuyez pour écouter", sub: "Un message audio sera lu\ndans votre langue." },
-    it: { file: "italian.mp3",  name: "Italiano",   tap: "Tocca qui",    headline: "Tocca per ascoltare",  sub: "Verrà riprodotto un messaggio\naudio nella tua lingua." },
-    nl: { file: "dutch.mp3",    name: "Nederlands", tap: "Tik hier",     headline: "Tik om te luisteren",  sub: "Er wordt een audiobericht\nin uw taal afgespeeld." }
+    es: { file: "spanish.mp3",  name: "Español",    tap: "Toca aquí",   headline: "Toca para escuchar",   sub: "Se reproducirá un mensaje\nen tu idioma." },
+    en: { file: "english.mp3",  name: "English",    tap: "Tap here",    headline: "Tap to listen",        sub: "An audio message will play\nin your language." },
+    fr: { file: "french.mp3",   name: "Français",   tap: "Appuyez ici", headline: "Appuyez pour écouter", sub: "Un message audio sera lu\ndans votre langue." },
+    it: { file: "italian.mp3",  name: "Italiano",   tap: "Tocca qui",   headline: "Tocca per ascoltare",  sub: "Verrà riprodotto un messaggio\naudio nella tua lingua." },
+    nl: { file: "dutch.mp3",    name: "Nederlands", tap: "Tik hier",    headline: "Tik om te luisteren",  sub: "Er wordt een audiobericht\nin uw taal afgespeeld." }
   };
 
-  // Si el dispositivo tiene un idioma sin mp3, usamos el fallback
   const langFallback = { de: "nl", pt: "es", zh: "es", ja: "es", ko: "en", ru: "en" };
 
   let currentLang = "es";
@@ -177,17 +164,6 @@
     document.getElementById("headline").innerHTML = m.headline.replace("\n", "<br>");
     document.getElementById("sub").innerHTML = m.sub.replace("\n", "<br>");
     document.getElementById("btn-label").textContent = m.tap;
-      b.classList.toggle("active", b.dataset.lang === lang);
-    });
-  }
-
-    Object.keys(messages).forEach(lang => {
-      const btn = document.createElement("button");
-      btn.textContent = messages[lang].name;
-      btn.dataset.lang = lang;
-      btn.onclick = () => setLang(lang);
-      sw.appendChild(btn);
-    });
   }
 
   function handleTap() {
