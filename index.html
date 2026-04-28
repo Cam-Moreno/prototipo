@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Audio QR</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0d0d0d; --surface: #161616; --border: rgba(255,255,255,0.08);
+      --text: #f0ede6; --muted: rgba(240,237,230,0.45);
+      --accent: #c8f060; --accent-dark: #a8d040;
+    }
+    html, body {
+      height: 100%; width: 100%; background: var(--bg); color: var(--text);
+      font-family: 'DM Sans', sans-serif; display: flex;
+      align-items: center; justify-content: center; overflow: hidden;
+    }
+    .page {
+      width: 100%; max-width: 420px; min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 2.5rem 2rem; position: relative;
+    }
+    .blob {
+      position: fixed; border-radius: 50%; filter: blur(80px);
+      opacity: 0.18; pointer-events: none; z-index: 0;
+    }
+    .blob-1 { width: 320px; height: 320px; background: var(--accent); top: -80px; right: -80px; }
+    .blob-2 { width: 240px; height: 240px; background: #60a0f0; bottom: -60px; left: -60px; }
+    .content { position: relative; z-index: 1; width: 100%; text-align: center; }
+    .lang-badge {
+      display: inline-block; font-size: 11px; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent);
+      border: 1px solid rgba(200,240,96,0.3); border-radius: 999px;
+      padding: 5px 14px; margin-bottom: 2rem;
+      opacity: 0; animation: fadeUp 0.6s ease 0.2s forwards;
+    }
+    .headline {
+      font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 8vw, 2.6rem);
+      line-height: 1.15; color: var(--text); margin-bottom: 1rem;
+      opacity: 0; animation: fadeUp 0.6s ease 0.35s forwards;
+    }
+    .sub {
+      font-size: 15px; font-weight: 300; color: var(--muted);
+      line-height: 1.6; margin-bottom: 3rem;
+      opacity: 0; animation: fadeUp 0.6s ease 0.5s forwards;
+    }
+    .tap-btn {
+      position: relative; width: 160px; height: 160px; border-radius: 50%;
+      border: none; background: var(--accent); color: #0d0d0d; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 8px; margin: 0 auto 3rem;
+      transition: transform 0.15s ease, background 0.2s;
+      opacity: 0; animation: fadeUp 0.6s ease 0.65s forwards;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .tap-btn:active { transform: scale(0.94); background: var(--accent-dark); }
+    .tap-btn .icon { font-size: 40px; line-height: 1; }
+    .tap-btn .label {
+      font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    .tap-btn::before, .tap-btn::after {
+      content: ''; position: absolute; border-radius: 50%;
+      border: 2px solid var(--accent); opacity: 0;
+      animation: pulse 2.5s ease-out infinite;
+    }
+    .tap-btn::after { animation-delay: 1.2s; }
+    @keyframes pulse {
+      0%   { width: 160px; height: 160px; opacity: 0.6; }
+      100% { width: 260px; height: 260px; opacity: 0; }
+    }
+    .tap-btn.playing {
+      background: var(--surface); border: 2px solid var(--accent); color: var(--accent);
+    }
+    .tap-btn.playing::before, .tap-btn.playing::after { display: none; }
+    .wave { display: none; align-items: flex-end; gap: 4px; height: 28px; }
+    .tap-btn.playing .wave { display: flex; }
+    .tap-btn.playing .icon { display: none; }
+    .wave span {
+      display: block; width: 4px; background: var(--accent); border-radius: 2px;
+      animation: bar 0.8s ease-in-out infinite alternate;
+    }
+    .wave span:nth-child(1) { height: 8px;  animation-delay: 0s; }
+    .wave span:nth-child(2) { height: 20px; animation-delay: 0.15s; }
+    .wave span:nth-child(3) { height: 28px; animation-delay: 0.3s; }
+    .wave span:nth-child(4) { height: 16px; animation-delay: 0.45s; }
+    .wave span:nth-child(5) { height: 10px; animation-delay: 0.6s; }
+    @keyframes bar {
+      from { transform: scaleY(0.3); }
+      to   { transform: scaleY(1); }
+    }
+    .status {
+      font-size: 13px; color: var(--muted); min-height: 20px;
+      opacity: 0; animation: fadeUp 0.6s ease 0.8s forwards;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+
+<div class="page">
+  <div class="content">
+    <div class="lang-badge" id="lang-badge">Detectando idioma…</div>
+    <h1 class="headline" id="headline">Toca para<br>escuchar</h1>
+    <p class="sub" id="sub">Se reproducirá un mensaje de audio<br>en tu idioma.</p>
+    <button class="tap-btn" id="tap-btn" onclick="handleTap()">
+      <span class="icon">&#9654;</span>
+      <div class="wave">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <span class="label" id="btn-label">Toca aquí</span>
+    </button>
+    <p class="status" id="status"></p>
+  </div>
+</div>
+
+<script>
+  const messages = {
+    es: { file: "spanish.mp3",  name: "Español",    tap: "Toca aquí",   headline: "Toca para escuchar",   sub: "Se reproducirá un mensaje\nen tu idioma." },
+    en: { file: "english.mp3",  name: "English",    tap: "Tap here",    headline: "Tap to listen",        sub: "An audio message will play\nin your language." },
+    fr: { file: "french.mp3",   name: "Français",   tap: "Appuyez ici", headline: "Appuyez pour écouter", sub: "Un message audio sera lu\ndans votre langue." },
+    it: { file: "italian.mp3",  name: "Italiano",   tap: "Tocca qui",   headline: "Tocca per ascoltare",  sub: "Verrà riprodotto un messaggio\naudio nella tua lingua." },
+    nl: { file: "dutch.mp3",    name: "Nederlands", tap: "Tik hier",    headline: "Tik om te luisteren",  sub: "Er wordt een audiobericht\nin uw taal afgespeeld." }
+  };
+
+  const langFallback = { de: "nl", pt: "es", zh: "es", ja: "es", ko: "en", ru: "en" };
+
+  let currentLang = "es";
+  let currentAudio = null;
+  let isPlaying = false;
+
+  function detectLang() {
+    const nav = (navigator.language || "es").toLowerCase().split("-")[0];
+    if (messages[nav]) return nav;
+    if (langFallback[nav]) return langFallback[nav];
+    return "es";
+  }
+
+  function stopAudio() {
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+      currentAudio = null;
+    }
+    isPlaying = false;
+    document.getElementById("tap-btn").classList.remove("playing");
+    document.getElementById("status").textContent = "";
+    document.getElementById("btn-label").textContent = messages[currentLang].tap;
+  }
+
+  function setLang(lang) {
+    if (isPlaying) stopAudio();
+    currentLang = lang;
+    const m = messages[lang];
+    document.getElementById("lang-badge").textContent = m.name;
+    document.getElementById("headline").innerHTML = m.headline.replace("\n", "<br>");
+    document.getElementById("sub").innerHTML = m.sub.replace("\n", "<br>");
+    document.getElementById("btn-label").textContent = m.tap;
+  }
+
+  function handleTap() {
+    if (isPlaying) { stopAudio(); return; }
+
+    const m = messages[currentLang];
+    const audio = new Audio(m.file);
+    currentAudio = audio;
+
+    audio.onplay = () => {
+      isPlaying = true;
+      document.getElementById("tap-btn").classList.add("playing");
+      document.getElementById("btn-label").textContent = "Detener";
+      document.getElementById("status").textContent = "Reproduciendo…";
+    };
+
+    audio.onended = () => stopAudio();
+
+    audio.onerror = () => {
+      stopAudio();
+      document.getElementById("status").textContent = "⚠ No se encontró el archivo de audio.";
+    };
+
+    audio.play().catch(() => {
+      stopAudio();
+      document.getElementById("status").textContent = "⚠ Error al reproducir el audio.";
+    });
+  }
+
+  setLang(detectLang());
+</script>
+</body>
+</html>
