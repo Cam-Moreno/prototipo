@@ -3,197 +3,369 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Audio QR</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <title>Nescafé Clásico</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #0d0d0d; --surface: #161616; --border: rgba(255,255,255,0.08);
-      --text: #f0ede6; --muted: rgba(240,237,230,0.45);
-      --accent: #c8f060; --accent-dark: #a8d040;
+      --bg: #1a0a00; --surface: #2a1200; --surface2: #3a1a00;
+      --text: #fff8f0; --muted: rgba(255,248,240,0.5);
+      --accent: #e8321a; --accent2: #f5a623;
+      --radius: 16px;
     }
     html, body {
-      height: 100%; width: 100%; background: var(--bg); color: var(--text);
-      font-family: 'DM Sans', sans-serif; display: flex;
-      align-items: center; justify-content: center; overflow: hidden;
+      min-height: 100%; width: 100%; background: var(--bg); color: var(--text);
+      font-family: 'DM Sans', sans-serif;
     }
-    .page {
-      width: 100%; max-width: 420px; min-height: 100vh;
+    .page { min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 0 0 4rem; }
+
+    /* Hero */
+    .hero {
+      width: 100%; background: linear-gradient(160deg, #c8240a 0%, #8b1500 100%);
+      padding: 3rem 2rem 2.5rem; text-align: center; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 70% 30%, rgba(245,166,35,0.25) 0%, transparent 60%);
+    }
+    .hero-badge {
+      display: inline-block; font-size: 10px; letter-spacing: 0.15em; font-weight: 600;
+      text-transform: uppercase; color: var(--accent2); background: rgba(245,166,35,0.15);
+      border: 1px solid rgba(245,166,35,0.35); border-radius: 999px;
+      padding: 4px 12px; margin-bottom: 1rem; position: relative;
+    }
+    .hero-icon { font-size: 52px; margin-bottom: 0.5rem; position: relative; }
+    .hero h1 {
+      font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 7vw, 2.8rem);
+      line-height: 1.1; color: white; position: relative;
+    }
+    .hero h1 span { color: var(--accent2); }
+    .hero-sub { font-size: 14px; color: rgba(255,255,255,0.65); margin-top: 0.5rem; position: relative; }
+
+    /* Content */
+    .content { width: 100%; max-width: 480px; padding: 0 1.25rem; }
+
+    /* Play button */
+    .play-section { text-align: center; padding: 2rem 0 1.5rem; }
+    .play-btn {
+      position: relative; width: 140px; height: 140px; border-radius: 50%;
+      border: none; background: var(--accent); color: white; cursor: pointer;
       display: flex; flex-direction: column; align-items: center;
-      justify-content: center; padding: 2.5rem 2rem; position: relative;
-    }
-    .blob {
-      position: fixed; border-radius: 50%; filter: blur(80px);
-      opacity: 0.18; pointer-events: none; z-index: 0;
-    }
-    .blob-1 { width: 320px; height: 320px; background: var(--accent); top: -80px; right: -80px; }
-    .blob-2 { width: 240px; height: 240px; background: #60a0f0; bottom: -60px; left: -60px; }
-    .content { position: relative; z-index: 1; width: 100%; text-align: center; }
-    .lang-badge {
-      display: inline-block; font-size: 11px; font-weight: 500;
-      letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent);
-      border: 1px solid rgba(200,240,96,0.3); border-radius: 999px;
-      padding: 5px 14px; margin-bottom: 2rem;
-      opacity: 0; animation: fadeUp 0.6s ease 0.2s forwards;
-    }
-    .headline {
-      font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 8vw, 2.6rem);
-      line-height: 1.15; color: var(--text); margin-bottom: 1rem;
-      opacity: 0; animation: fadeUp 0.6s ease 0.35s forwards;
-    }
-    .sub {
-      font-size: 15px; font-weight: 300; color: var(--muted);
-      line-height: 1.6; margin-bottom: 3rem;
-      opacity: 0; animation: fadeUp 0.6s ease 0.5s forwards;
-    }
-    .tap-btn {
-      position: relative; width: 160px; height: 160px; border-radius: 50%;
-      border: none; background: var(--accent); color: #0d0d0d; cursor: pointer;
-      display: flex; flex-direction: column; align-items: center;
-      justify-content: center; gap: 8px; margin: 0 auto 3rem;
-      transition: transform 0.15s ease, background 0.2s;
-      opacity: 0; animation: fadeUp 0.6s ease 0.65s forwards;
+      justify-content: center; gap: 6px; margin: 0 auto 1rem;
+      transition: transform 0.15s, opacity 0.2s;
       -webkit-tap-highlight-color: transparent;
+      box-shadow: 0 8px 30px rgba(232,50,26,0.45);
     }
-    .tap-btn:active { transform: scale(0.94); background: var(--accent-dark); }
-    .tap-btn .icon { font-size: 40px; line-height: 1; }
-    .tap-btn .label {
-      font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
-      letter-spacing: 0.1em; text-transform: uppercase;
-    }
-    .tap-btn::before, .tap-btn::after {
+    .play-btn:active { transform: scale(0.93); }
+    .play-btn .icon { font-size: 36px; }
+    .play-btn .lbl { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+    .play-btn::before, .play-btn::after {
       content: ''; position: absolute; border-radius: 50%;
-      border: 2px solid var(--accent); opacity: 0;
-      animation: pulse 2.5s ease-out infinite;
+      border: 2px solid var(--accent); opacity: 0; animation: pulse 2.5s ease-out infinite;
     }
-    .tap-btn::after { animation-delay: 1.2s; }
+    .play-btn::after { animation-delay: 1.2s; }
     @keyframes pulse {
-      0%   { width: 160px; height: 160px; opacity: 0.6; }
-      100% { width: 260px; height: 260px; opacity: 0; }
+      0%   { width: 140px; height: 140px; opacity: 0.5; }
+      100% { width: 220px; height: 220px; opacity: 0; }
     }
-    .tap-btn.playing {
-      background: var(--surface); border: 2px solid var(--accent); color: var(--accent);
-    }
-    .tap-btn.playing::before, .tap-btn.playing::after { display: none; }
-    .wave { display: none; align-items: flex-end; gap: 4px; height: 28px; }
-    .tap-btn.playing .wave { display: flex; }
-    .tap-btn.playing .icon { display: none; }
+    .play-btn.playing { background: var(--surface2); border: 2px solid var(--accent); }
+    .play-btn.playing::before, .play-btn.playing::after { display: none; }
+    .wave { display: none; align-items: flex-end; gap: 4px; height: 26px; }
+    .play-btn.playing .wave { display: flex; }
+    .play-btn.playing .icon { display: none; }
     .wave span {
       display: block; width: 4px; background: var(--accent); border-radius: 2px;
       animation: bar 0.8s ease-in-out infinite alternate;
     }
-    .wave span:nth-child(1) { height: 8px;  animation-delay: 0s; }
-    .wave span:nth-child(2) { height: 20px; animation-delay: 0.15s; }
-    .wave span:nth-child(3) { height: 28px; animation-delay: 0.3s; }
-    .wave span:nth-child(4) { height: 16px; animation-delay: 0.45s; }
-    .wave span:nth-child(5) { height: 10px; animation-delay: 0.6s; }
-    @keyframes bar {
-      from { transform: scaleY(0.3); }
-      to   { transform: scaleY(1); }
+    .wave span:nth-child(1) { height: 7px;  animation-delay: 0s; }
+    .wave span:nth-child(2) { height: 18px; animation-delay: 0.15s; }
+    .wave span:nth-child(3) { height: 26px; animation-delay: 0.3s; }
+    .wave span:nth-child(4) { height: 14px; animation-delay: 0.45s; }
+    .wave span:nth-child(5) { height: 9px;  animation-delay: 0.6s; }
+    @keyframes bar { from { transform: scaleY(0.3); } to { transform: scaleY(1); } }
+    .play-status { font-size: 13px; color: var(--muted); min-height: 18px; }
+
+    /* Cards */
+    .cards { display: flex; flex-direction: column; gap: 12px; margin-top: 0.5rem; }
+    .card {
+      background: var(--surface); border-radius: var(--radius); padding: 1.25rem;
+      border: 1px solid rgba(255,255,255,0.06);
     }
-    .status {
-      font-size: 13px; color: var(--muted); min-height: 20px;
-      opacity: 0; animation: fadeUp 0.6s ease 0.8s forwards;
+    .card-title {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--accent2); margin-bottom: 0.75rem;
     }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    .card-body { font-size: 14px; color: var(--muted); line-height: 1.8; }
+    .card-body strong { color: var(--text); font-weight: 500; }
+    .card-body p { margin-bottom: 0.5rem; }
+    .card-body p:last-child { margin-bottom: 0; }
+    .nutrition-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
+    .nut-item { background: var(--surface2); border-radius: 10px; padding: 10px 12px; }
+    .nut-item .val { font-size: 18px; font-weight: 600; color: var(--text); }
+    .nut-item .key { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .footer { margin-top: 2rem; text-align: center; font-size: 12px; color: var(--muted); }
+    .nestle-logo { font-size: 11px; letter-spacing: 0.1em; color: rgba(255,255,255,0.2); margin-top: 4px; }
   </style>
 </head>
 <body>
-
-<div class="blob blob-1"></div>
-<div class="blob blob-2"></div>
-
 <div class="page">
+  <div class="hero">
+    <div class="hero-badge">Nestlé — Información de producto</div>
+    <div class="hero-icon">☕</div>
+    <h1>Nescafé <span>Clásico</span></h1>
+    <p class="hero-sub" id="hero-sub">Café soluble instantáneo</p>
+  </div>
+
   <div class="content">
-    <div class="lang-badge" id="lang-badge">Detectando idioma…</div>
-    <h1 class="headline" id="headline">Toca para<br>escuchar</h1>
-    <p class="sub" id="sub">Se reproducirá un mensaje de audio<br>en tu idioma.</p>
-    <button class="tap-btn" id="tap-btn" onclick="handleTap()">
-      <span class="icon">&#9654;</span>
-      <div class="wave">
-        <span></span><span></span><span></span><span></span><span></span>
+    <div class="play-section">
+      <button class="play-btn" id="play-btn" onclick="handleTap()">
+        <span class="icon">▶</span>
+        <div class="wave"><span></span><span></span><span></span><span></span><span></span></div>
+        <span class="lbl" id="play-lbl">Escuchar</span>
+      </button>
+      <p class="play-status" id="play-status"></p>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-title" id="lbl-desc">Descripción</div>
+        <div class="card-body" id="txt-desc"></div>
       </div>
-      <span class="label" id="btn-label">Toca aquí</span>
-    </button>
-    <p class="status" id="status"></p>
+      <div class="card">
+        <div class="card-title" id="lbl-ingr">Ingredientes</div>
+        <div class="card-body" id="txt-ingr"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" id="lbl-allerg">Alérgenos</div>
+        <div class="card-body" id="txt-allerg"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" id="lbl-nutr">Información nutricional</div>
+        <div class="card-body">
+          <p style="font-size:12px; color: var(--muted); margin-bottom: 10px;" id="txt-nutr-note"></p>
+          <div class="nutrition-grid">
+            <div class="nut-item"><div class="val">4 kcal</div><div class="key" id="lbl-cal"></div></div>
+            <div class="nut-item"><div class="val">0.2 g</div><div class="key" id="lbl-fat"></div></div>
+            <div class="nut-item"><div class="val">0.06 g</div><div class="key" id="lbl-carb"></div></div>
+            <div class="nut-item"><div class="val">0.14 g</div><div class="key" id="lbl-prot"></div></div>
+            <div class="nut-item"><div class="val">0.25 g</div><div class="key" id="lbl-salt"></div></div>
+            <div class="nut-item"><div class="val">80 mg</div><div class="key" id="lbl-caff"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" id="lbl-prep">Modo de preparación</div>
+        <div class="card-body" id="txt-prep"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" id="lbl-store">Conservación</div>
+        <div class="card-body" id="txt-store"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" id="lbl-contact">Contacto</div>
+        <div class="card-body" id="txt-contact"></div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div id="txt-footer"></div>
+      <div class="nestle-logo">NESTLÉ — Good food, Good life</div>
+    </div>
   </div>
 </div>
 
 <script>
-  const messages = {
-    es: { file: "spanish.mp3",  name: "Español",    tap: "Toca aquí",   headline: "Toca para escuchar",   sub: "Se reproducirá un mensaje\nen tu idioma." },
-    en: { file: "english.mp3",  name: "English",    tap: "Tap here",    headline: "Tap to listen",        sub: "An audio message will play\nin your language." },
-    fr: { file: "french.mp3",   name: "Français",   tap: "Appuyez ici", headline: "Appuyez pour écouter", sub: "Un message audio sera lu\ndans votre langue." },
-    it: { file: "italian.mp3",  name: "Italiano",   tap: "Tocca qui",   headline: "Tocca per ascoltare",  sub: "Verrà riprodotto un messaggio\naudio nella tua lingua." },
-    nl: { file: "dutch.mp3",    name: "Nederlands", tap: "Tik hier",    headline: "Tik om te luisteren",  sub: "Er wordt een audiobericht\nin uw taal afgespeeld." }
+  const i18n = {
+    es: {
+      heroSub: "Café soluble instantáneo",
+      playLbl: "Escuchar", stopLbl: "Detener", playing: "Reproduciendo…",
+      lbl: {
+        desc:"Descripción", ingr:"Ingredientes", allerg:"Alérgenos",
+        nutr:"Información nutricional", nutrNote:"Por porción de 1.8 g en 200 ml de agua",
+        cal:"Calorías", fat:"Grasas totales", carb:"Carbohidratos",
+        prot:"Proteínas", salt:"Sal", caff:"Cafeína",
+        prep:"Modo de preparación", store:"Conservación",
+        contact:"Contacto", footer:"Fabricado por Nestlé de Colombia S.A. • Bogotá, Colombia"
+      },
+      txt: {
+        desc: "Nescafé Clásico es un café soluble instantáneo 100% puro, elaborado con una cuidadosa selección de granos de café tostado. Disfruta de su sabor y aroma inconfundibles en cada taza.",
+        ingr: "<strong>Café tostado y soluble 100% puro.</strong>",
+        allerg: "No contiene alérgenos declarados. Fabricado en instalaciones que también procesan productos con <strong>leche, soya y gluten</strong>.",
+        prep: "<p>1. Calienta agua hasta casi hervir (90–95 °C).</p><p>2. Coloca <strong>1 cucharadita (1.8 g)</strong> en tu taza.</p><p>3. Añade <strong>200 ml</strong> de agua caliente.</p><p>4. Revuelve y endulza al gusto.</p><p><em>También puedes prepararlo con leche caliente para un sabor más cremoso.</em></p>",
+        store: "Conservar en lugar <strong>fresco y seco</strong>, alejado de la luz solar. Una vez abierto, mantener bien cerrado.",
+        contact: "Nestlé de Colombia S.A.<br>Línea gratuita: <strong>01 8000 912 080</strong><br>www.nestle.com.co"
+      },
+      audio:
+        "Nescafé Clásico. Café soluble instantáneo cien por ciento puro, elaborado con una selección de granos de café tostado. " +
+        "Ingredientes: café tostado y soluble cien por ciento puro. " +
+        "No contiene alérgenos declarados. Fabricado en instalaciones que también procesan leche, soya y gluten. " +
+        "Información nutricional por porción de 1.8 gramos en 200 mililitros de agua: 4 calorías, 0.2 gramos de grasa, 0.06 gramos de carbohidratos, 0.14 gramos de proteína, 0.25 gramos de sal, 80 miligramos de cafeína. " +
+        "Preparación: calienta agua a 90 grados, coloca una cucharadita en tu taza, añade 200 mililitros de agua caliente, revuelve y endulza al gusto. " +
+        "Conservar en lugar fresco y seco. Una vez abierto, mantener bien cerrado. " +
+        "Fabricado por Nestlé de Colombia. Línea gratuita: cero uno ocho mil novecientos doce cero ochenta.",
+      lang: "es-ES"
+    },
+    en: {
+      heroSub: "Instant soluble coffee",
+      playLbl: "Listen", stopLbl: "Stop", playing: "Playing…",
+      lbl: {
+        desc:"Description", ingr:"Ingredients", allerg:"Allergens",
+        nutr:"Nutrition facts", nutrNote:"Per 1.8 g serving in 200 ml of water",
+        cal:"Calories", fat:"Total fat", carb:"Carbohydrates",
+        prot:"Protein", salt:"Salt", caff:"Caffeine",
+        prep:"Preparation", store:"Storage",
+        contact:"Contact", footer:"Manufactured by Nestlé de Colombia S.A. • Bogotá, Colombia"
+      },
+      txt: {
+        desc: "Nescafé Clásico is a 100% pure instant soluble coffee, made with a careful selection of roasted coffee beans. Enjoy its unmistakable flavour and aroma in every cup.",
+        ingr: "<strong>100% pure roasted and soluble coffee.</strong>",
+        allerg: "Contains no declared allergens. Manufactured in facilities that also process products containing <strong>milk, soy and gluten</strong>.",
+        prep: "<p>1. Heat water to just below boiling (90–95 °C).</p><p>2. Place <strong>1 teaspoon (1.8 g)</strong> in your cup.</p><p>3. Add <strong>200 ml</strong> of hot water.</p><p>4. Stir well and sweeten to taste.</p><p><em>You can also prepare it with hot milk for a creamier taste.</em></p>",
+        store: "Store in a <strong>cool, dry place</strong> away from direct sunlight. Once opened, keep tightly closed.",
+        contact: "Nestlé de Colombia S.A.<br>Toll-free: <strong>01 8000 912 080</strong><br>www.nestle.com.co"
+      },
+      audio:
+        "Nescafé Clásico. 100 percent pure instant soluble coffee made with a careful selection of roasted coffee beans. " +
+        "Ingredients: 100 percent pure roasted and soluble coffee. " +
+        "Contains no declared allergens. Manufactured in facilities that also process milk, soy and gluten. " +
+        "Nutrition facts per 1.8 gram serving in 200 millilitres of water: 4 calories, 0.2 grams of fat, 0.06 grams of carbohydrates, 0.14 grams of protein, 0.25 grams of salt, 80 milligrams of caffeine. " +
+        "Preparation: heat water to 90 degrees, place one teaspoon in your cup, add 200 millilitres of hot water, stir and sweeten to taste. " +
+        "Store in a cool dry place. Once opened, keep tightly closed. " +
+        "Manufactured by Nestlé de Colombia. Toll-free line: 01 8000 912 080.",
+      lang: "en-US"
+    },
+    fr: {
+      heroSub: "Café soluble instantané",
+      playLbl: "Écouter", stopLbl: "Arrêter", playing: "Lecture en cours…",
+      lbl: {
+        desc:"Description", ingr:"Ingrédients", allerg:"Allergènes",
+        nutr:"Informations nutritionnelles", nutrNote:"Par portion de 1,8 g dans 200 ml d'eau",
+        cal:"Calories", fat:"Lipides totaux", carb:"Glucides",
+        prot:"Protéines", salt:"Sel", caff:"Caféine",
+        prep:"Mode de préparation", store:"Conservation",
+        contact:"Contact", footer:"Fabriqué par Nestlé de Colombia S.A. • Bogotá, Colombie"
+      },
+      txt: {
+        desc: "Nescafé Clásico est un café soluble instantané 100 % pur, élaboré à partir d'une sélection soigneuse de grains de café torréfiés. Savourez sa saveur et son arôme incomparables à chaque tasse.",
+        ingr: "<strong>Café torréfié et soluble 100 % pur.</strong>",
+        allerg: "Ne contient pas d'allergènes déclarés. Fabriqué dans des installations traitant également des produits contenant <strong>du lait, du soja et du gluten</strong>.",
+        prep: "<p>1. Chauffez l'eau à presque ébullition (90–95 °C).</p><p>2. Placez <strong>1 cuillère à café (1,8 g)</strong> dans votre tasse.</p><p>3. Ajoutez <strong>200 ml</strong> d'eau chaude.</p><p>4. Remuez et sucrez selon votre goût.</p><p><em>Vous pouvez aussi le préparer avec du lait chaud pour un goût plus crémeux.</em></p>",
+        store: "Conserver dans un endroit <strong>frais et sec</strong>, à l'abri de la lumière. Une fois ouvert, bien refermer.",
+        contact: "Nestlé de Colombia S.A.<br>Ligne gratuite : <strong>01 8000 912 080</strong><br>www.nestle.com.co"
+      },
+      audio:
+        "Nescafé Clásico. Café soluble instantané 100 pour cent pur, élaboré à partir d'une sélection de grains torréfiés. " +
+        "Ingrédients : café torréfié et soluble 100 pour cent pur. " +
+        "Ne contient pas d'allergènes déclarés. Fabriqué dans des installations traitant aussi du lait, soja et gluten. " +
+        "Informations nutritionnelles par portion de 1,8 gramme dans 200 millilitres d'eau : 4 calories, 0,2 grammes de lipides, 0,06 grammes de glucides, 0,14 grammes de protéines, 0,25 grammes de sel, 80 milligrammes de caféine. " +
+        "Préparation : chauffez l'eau à 90 degrés, placez une cuillère à café dans votre tasse, ajoutez 200 millilitres d'eau chaude, remuez et sucrez selon votre goût. " +
+        "Conserver dans un endroit frais et sec. Une fois ouvert, bien refermer. " +
+        "Fabriqué par Nestlé de Colombia. Ligne gratuite : 01 8000 912 080.",
+      lang: "fr-FR"
+    },
+    pt: {
+      heroSub: "Café solúvel instantâneo",
+      playLbl: "Ouvir", stopLbl: "Parar", playing: "Reproduzindo…",
+      lbl: {
+        desc:"Descrição", ingr:"Ingredientes", allerg:"Alergênicos",
+        nutr:"Informação nutricional", nutrNote:"Por porção de 1,8 g em 200 ml de água",
+        cal:"Calorias", fat:"Gorduras totais", carb:"Carboidratos",
+        prot:"Proteínas", salt:"Sal", caff:"Cafeína",
+        prep:"Modo de preparo", store:"Conservação",
+        contact:"Contato", footer:"Fabricado por Nestlé de Colombia S.A. • Bogotá, Colômbia"
+      },
+      txt: {
+        desc: "Nescafé Clásico é um café solúvel instantâneo 100% puro, elaborado com uma cuidadosa seleção de grãos de café torrado. Aproveite seu sabor e aroma inconfundíveis em cada xícara.",
+        ingr: "<strong>Café torrado e solúvel 100% puro.</strong>",
+        allerg: "Não contém alergênicos declarados. Fabricado em instalações que também processam produtos com <strong>leite, soja e glúten</strong>.",
+        prep: "<p>1. Aqueça a água até quase ferver (90–95 °C).</p><p>2. Coloque <strong>1 colher de chá (1,8 g)</strong> na sua xícara.</p><p>3. Adicione <strong>200 ml</strong> de água quente.</p><p>4. Mexa e adoce a gosto.</p><p><em>Você também pode preparar com leite quente para um sabor mais cremoso.</em></p>",
+        store: "Conservar em local <strong>fresco e seco</strong>, longe da luz solar. Uma vez aberto, manter bem fechado.",
+        contact: "Nestlé de Colombia S.A.<br>Linha gratuita: <strong>01 8000 912 080</strong><br>www.nestle.com.co"
+      },
+      audio:
+        "Nescafé Clásico. Café solúvel instantâneo 100 por cento puro, elaborado com uma seleção de grãos de café torrado. " +
+        "Ingredientes: café torrado e solúvel 100 por cento puro. " +
+        "Não contém alergênicos declarados. Fabricado em instalações que também processam leite, soja e glúten. " +
+        "Informação nutricional por porção de 1,8 grama em 200 mililitros de água: 4 calorias, 0,2 gramas de gordura, 0,06 gramas de carboidratos, 0,14 gramas de proteína, 0,25 gramas de sal, 80 miligramas de cafeína. " +
+        "Preparo: aqueça água a 90 graus, coloque uma colher de chá na xícara, adicione 200 mililitros de água quente, mexa e adoce a gosto. " +
+        "Conservar em local fresco e seco. Uma vez aberto, manter bem fechado. " +
+        "Fabricado por Nestlé de Colombia. Linha gratuita: 01 8000 912 080.",
+      lang: "pt-BR"
+    }
   };
 
-  const langFallback = { de: "nl", pt: "es", zh: "es", ja: "es", ko: "en", ru: "en" };
+  const langFallback = { ca:"es", gl:"es", eu:"es", de:"fr", it:"fr", nl:"fr", ro:"fr" };
 
   let currentLang = "es";
-  let currentAudio = null;
   let isPlaying = false;
 
   function detectLang() {
     const nav = (navigator.language || "es").toLowerCase().split("-")[0];
-    if (messages[nav]) return nav;
+    if (i18n[nav]) return nav;
     if (langFallback[nav]) return langFallback[nav];
     return "es";
   }
 
-  function stopAudio() {
-    if (currentAudio) {
-      currentAudio.pause();
-      currentAudio.currentTime = 0;
-      currentAudio = null;
-    }
-    isPlaying = false;
-    document.getElementById("tap-btn").classList.remove("playing");
-    document.getElementById("status").textContent = "";
-    document.getElementById("btn-label").textContent = messages[currentLang].tap;
+  function applyLang() {
+    const t = i18n[currentLang];
+    const l = t.lbl;
+    const tx = t.txt;
+    document.getElementById("hero-sub").textContent = t.heroSub;
+    document.getElementById("play-lbl").textContent = t.playLbl;
+    document.getElementById("lbl-desc").textContent = l.desc;
+    document.getElementById("lbl-ingr").textContent = l.ingr;
+    document.getElementById("lbl-allerg").textContent = l.allerg;
+    document.getElementById("lbl-nutr").textContent = l.nutr;
+    document.getElementById("txt-nutr-note").textContent = l.nutrNote;
+    document.getElementById("lbl-cal").textContent = l.cal;
+    document.getElementById("lbl-fat").textContent = l.fat;
+    document.getElementById("lbl-carb").textContent = l.carb;
+    document.getElementById("lbl-prot").textContent = l.prot;
+    document.getElementById("lbl-salt").textContent = l.salt;
+    document.getElementById("lbl-caff").textContent = l.caff;
+    document.getElementById("lbl-prep").textContent = l.prep;
+    document.getElementById("lbl-store").textContent = l.store;
+    document.getElementById("lbl-contact").textContent = l.contact;
+    document.getElementById("txt-footer").textContent = l.footer;
+    document.getElementById("txt-desc").innerHTML = tx.desc;
+    document.getElementById("txt-ingr").innerHTML = tx.ingr;
+    document.getElementById("txt-allerg").innerHTML = tx.allerg;
+    document.getElementById("txt-prep").innerHTML = tx.prep;
+    document.getElementById("txt-store").innerHTML = tx.store;
+    document.getElementById("txt-contact").innerHTML = tx.contact;
   }
 
-  function setLang(lang) {
-    if (isPlaying) stopAudio();
-    currentLang = lang;
-    const m = messages[lang];
-    document.getElementById("lang-badge").textContent = m.name;
-    document.getElementById("headline").innerHTML = m.headline.replace("\n", "<br>");
-    document.getElementById("sub").innerHTML = m.sub.replace("\n", "<br>");
-    document.getElementById("btn-label").textContent = m.tap;
+  function stopAudio() {
+    window.speechSynthesis.cancel();
+    isPlaying = false;
+    document.getElementById("play-btn").classList.remove("playing");
+    document.getElementById("play-status").textContent = "";
+    document.getElementById("play-lbl").textContent = i18n[currentLang].playLbl;
   }
 
   function handleTap() {
     if (isPlaying) { stopAudio(); return; }
-
-    const m = messages[currentLang];
-    const audio = new Audio(m.file);
-    currentAudio = audio;
-
-    audio.onplay = () => {
+    if (!('speechSynthesis' in window)) {
+      document.getElementById("play-status").textContent = "Audio no disponible en este navegador.";
+      return;
+    }
+    const t = i18n[currentLang];
+    const utter = new SpeechSynthesisUtterance(t.audio);
+    utter.lang = t.lang;
+    utter.rate = 0.93;
+    utter.onstart = () => {
       isPlaying = true;
-      document.getElementById("tap-btn").classList.add("playing");
-      document.getElementById("btn-label").textContent = "Detener";
-      document.getElementById("status").textContent = "Reproduciendo…";
+      document.getElementById("play-btn").classList.add("playing");
+      document.getElementById("play-lbl").textContent = t.stopLbl;
+      document.getElementById("play-status").textContent = t.playing;
     };
-
-    audio.onended = () => stopAudio();
-
-    audio.onerror = () => {
-      stopAudio();
-      document.getElementById("status").textContent = "⚠ No se encontró el archivo de audio.";
-    };
-
-    audio.play().catch(() => {
-      stopAudio();
-      document.getElementById("status").textContent = "⚠ Error al reproducir el audio.";
-    });
+    utter.onend = utter.onerror = () => stopAudio();
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utter);
   }
 
-  setLang(detectLang());
+  currentLang = detectLang();
+  applyLang();
 </script>
 </body>
 </html>
