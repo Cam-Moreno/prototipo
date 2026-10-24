@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Buen Sabor</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header><a class="brand" href="pedidos.html">Buen <span>Sabor.</span></a><nav><a href="pedidos.html" data-i18n="orders"></a><a class="active" href="productos.html" data-i18n="products"></a><a href="menu.html" data-i18n="viewMenu"></a></nav></header>
+<main>
+<div class="section-title"><h1 data-i18n="products"></h1><span class="small" id="count"></span></div>
+<div class="layout">
+<div id="adminProducts" class="admin-list"></div>
+<div class="panel"><h2 id="formTitle"></h2>
+<form id="productForm" onsubmit="saveProduct(event)"><input type="hidden" id="editId">
+<div class="form-grid">
+<label class="wide"><span data-i18n="name"></span><input id="pName" required maxlength="60" data-ph="namePh"></label>
+<label><span data-i18n="price"></span><input id="pPrice" required type="number" min="0" step="500" placeholder="18000"></label>
+<label><span data-i18n="cat"></span><select id="pCategory"></select></label>
+<label class="wide"><span data-i18n="desc"></span><input id="pDescription" maxlength="120" data-ph="descPh"></label>
+<label class="wide"><span data-i18n="emoji"></span><input id="pEmoji" maxlength="5" value="🍔" placeholder="🍔"></label>
+</div>
+<div class="form-actions"><button type="submit" data-i18n="save"></button><button type="button" class="secondary hidden" id="cancelEdit" onclick="cancelEdit()" data-i18n="cancel"></button></div>
+</form></div>
+</div>
+</main>
+<script src="app.js"></script>
+<script>
+const CATS=['Hamburguesas','Entradas','Bebidas','Postres','Otros'];
+function render(){products=load('products',initialProducts);$('count').textContent=t('nActive',{n:products.length});$('adminProducts').innerHTML=products.length?products.map(p=>`<div class="admin-product"><div class="info"><strong>${esc(p.emoji)} ${esc(pName(p))}</strong><span class="small">${esc(catLabel(p.category))} · ${money(p.price)}</span></div><div class="actions"><button class="secondary" onclick="editProduct(${p.id})">${t('edit')}</button><button class="danger" aria-label="${t('del')}" onclick="deleteProduct(${p.id})">×</button></div></div>`).join(''):`<div class="empty" style="margin:12px 0">${t('noProd')}</div>`}
+function saveProduct(e){e.preventDefault();const id=Number($('editId').value),p={id:id||Date.now(),name:$('pName').value.trim(),price:Number($('pPrice').value),category:$('pCategory').value,description:$('pDescription').value.trim(),emoji:$('pEmoji').value.trim()||'🍽️'};if(!p.name||!Number.isFinite(p.price)||p.price<0)return;products=id?products.map(x=>x.id===id?p:x):[...products,p];persist();cancelEdit();render()}
+function editProduct(id){const p=products.find(x=>x.id===id);if(!p)return;$('editId').value=p.id;$('pName').value=pName(p);$('pPrice').value=p.price;$('pCategory').value=p.category;$('pDescription').value=pDesc(p)||'';$('pEmoji').value=p.emoji;$('formTitle').textContent=t('editP');$('cancelEdit').classList.remove('hidden');$('productForm').scrollIntoView({behavior:'smooth',block:'center'})}
+function cancelEdit(){$('productForm').reset();$('editId').value='';$('pEmoji').value='🍔';$('formTitle').textContent=t('addP');$('cancelEdit').classList.add('hidden')}
+function deleteProduct(id){const p=products.find(x=>x.id===id);if(!p||!confirm(t('confirmDel',{n:pName(p)})))return;products=products.filter(x=>x.id!==id);persist();render()}
+applyI18n();document.title=t('products')+' · Buen Sabor';$('pCategory').innerHTML=CATS.map(c=>`<option value="${c}">${esc(catLabel(c))}</option>`).join('');$('formTitle').textContent=t('addP');render();
+</script>
+</body></html>

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Buen Sabor</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header><a class="brand" href="pedidos.html">Buen <span>Sabor.</span></a><nav><a class="active" href="pedidos.html" data-i18n="orders"></a><a href="productos.html" data-i18n="products"></a><a href="menu.html" data-i18n="viewMenu"></a></nav></header>
+<main>
+<div class="section-title"><h1 data-i18n="orders"></h1><span class="small" data-i18n="newest"></span></div>
+<div class="stats"><div class="stat"><strong id="statOrders">0</strong><span data-i18n="stOrders"></span></div><div class="stat"><strong id="statPending">0</strong><span data-i18n="stPending"></span></div><div class="stat"><strong id="statSales">$0</strong><span data-i18n="stSales"></span></div></div>
+<div id="ordersList" class="admin-list"></div>
+</main>
+<script src="app.js"></script>
+<script>
+function render(){orders=load('orders',[]);$('statOrders').textContent=orders.length;$('statPending').textContent=orders.filter(o=>o.status==='Pendiente').length;$('statSales').textContent=money(orders.reduce((s,o)=>s+o.total,0));
+$('ordersList').innerHTML=orders.length?orders.map(o=>{const table=o.table&&o.table!=='Sin indicar'?o.table:t('noTable');return `<div class="order-row"><div style="flex:1"><div class="order-head"><strong>${t('orderN',{n:o.number})}</strong><span class="order-status">${esc(statusLabel(o.status))}</span></div><div class="small">${esc(new Date(o.id).toLocaleString(loc))} · ${esc(t('tableN',{t:table}))}</div><div class="small">${o.items.map(i=>`${i.quantity}× ${esc(i.name)}`).join(', ')}</div>${o.note?`<div class="small">${esc(t('noteN',{t:o.note}))}</div>`:''}<strong>${money(o.total)}</strong><div class="status-btns">${STATUSES.map(s=>`<button class="${s===o.status?'':'secondary'}" onclick="setStatus(${o.id},'${s}')">${esc(statusLabel(s))}</button>`).join('')}</div></div></div>`}).join(''):`<div class="empty" style="margin:12px 0">${t('noOrders')}</div>`}
+function setStatus(id,s){const o=orders.find(x=>x.id===id);if(o)o.status=s;persist();render()}
+applyI18n();document.title=t('orders')+' · Buen Sabor';render();
+</script>
+</body></html>
