@@ -6,11 +6,7 @@
 <title>Food Without Borders (FWB) — Menú digital y pedidos por mesa</title>
 <meta name="description" content="FWB es la plataforma para que los restaurantes publiquen su menú digital, generen un código QR por mesa y reciban los pedidos al instante.">
 <meta name="theme-color" content="#0D3B26">
-<link rel="icon" type="image/png" href="favicon.png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta property="og:title" content="Food Without Borders (FWB)">
-<meta property="og:description" content="Menú digital y pedidos por mesa para restaurantes.">
-<meta property="og:image" content="logo.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231F8A4C'/%3E%3Cpath d='M9 22c0-8 5-13 14-13 0 9-5 14-13 14' fill='%23fff'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -46,12 +42,8 @@ p{margin:0}
 
 /* Cabecera */
 header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-.nav{display:flex;align-items:center;justify-content:space-between;height:76px;gap:16px}
+.nav{display:flex;align-items:center;justify-content:space-between;height:70px;gap:16px}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--serif);font-weight:700;font-size:20px}
-.brand-logo{height:62px;width:auto;display:block;flex:none;transition:transform .25s}
-.brand:hover .brand-logo{transform:rotate(-4deg) scale(1.04)}
-footer .brand-logo{height:84px}
-footer .brand{gap:14px}
 .brand small{display:block;font:500 11.5px/1 var(--sans);color:var(--muted);margin-top:3px;letter-spacing:.01em}
 .nav-links{display:flex;gap:26px;font-weight:500;font-size:15.5px}
 .nav-links a{text-decoration:none;color:var(--muted)}
@@ -152,14 +144,14 @@ dialog p{color:var(--muted);margin-bottom:24px;font-size:16px}
   .features,.split,.foot{grid-template-columns:1fr}
   .split>div{padding:36px 28px}
   section{padding:68px 0}
-  .nav-links{display:none;position:absolute;top:76px;left:0;right:0;background:#fff;flex-direction:column;gap:0;padding:8px 24px 16px;border-bottom:1px solid var(--line)}
+  .nav-links{display:none;position:absolute;top:70px;left:0;right:0;background:#fff;flex-direction:column;gap:0;padding:8px 24px 16px;border-bottom:1px solid var(--line)}
   .nav-links.open{display:flex}
   .nav-links a{padding:13px 0;border-bottom:1px solid #EEF3EF}
   .menu-toggle{display:grid;place-items:center}
   .nav-cta .btn-ghost{display:none}
 }
 @media (max-width:420px){.nav-cta .btn-primary{display:none}.toast{right:0}}
-@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.toast{animation:none}.brand-logo{transition:none}.brand:hover .brand-logo{transform:none}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.toast{animation:none}}
 </style>
 </head>
 <body>
@@ -167,7 +159,7 @@ dialog p{color:var(--muted);margin-bottom:24px;font-size:16px}
 <header>
   <div class="wrap nav">
     <a class="brand" href="#inicio" aria-label="Food Without Borders, inicio">
-      <img class="brand-logo" src="logo.png" width="56" height="56" alt="">
+      <svg width="38" height="38" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="20" fill="#1F8A4C"/><circle cx="20" cy="20" r="16" fill="none" stroke="#fff" stroke-width="1.5" stroke-dasharray="3 3" opacity=".7"/><path d="M12 27c0-9 6-15 17-15 0 10-6 16-15 16" fill="#fff"/><path d="M12 29c4-5 8-8 13-11" stroke="#1F8A4C" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
       <span>FWB<small>Food Without Borders</small></span>
     </a>
     <nav class="nav-links" id="navLinks" aria-label="Principal">
@@ -265,7 +257,7 @@ dialog p{color:var(--muted);margin-bottom:24px;font-size:16px}
           <li>Sabe en qué punto está su pedido</li>
           <li>Funciona en el navegador, sin instalar nada</li>
         </ul>
-        <button class="btn btn-primary" data-na>Ver menú de demostración</button>
+        <a class="btn btn-primary" href="menu.html">Ver menú de demostración</a>
       </div>
     </div>
   </div>
@@ -288,7 +280,7 @@ dialog p{color:var(--muted);margin-bottom:24px;font-size:16px}
     <div class="foot">
       <div>
         <a class="brand" href="#inicio">
-          <img class="brand-logo" src="logo.png" width="56" height="56" alt="">
+          <svg width="38" height="38" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="20" fill="#1F8A4C"/><circle cx="20" cy="20" r="16" fill="none" stroke="#fff" stroke-width="1.5" stroke-dasharray="3 3" opacity=".7"/><path d="M12 27c0-9 6-15 17-15 0 10-6 16-15 16" fill="#fff"/></svg>
           <span>FWB<small>Food Without Borders</small></span>
         </a>
         <p style="margin-top:14px;max-width:26em">Menú digital y pedidos por mesa para restaurantes.</p>
